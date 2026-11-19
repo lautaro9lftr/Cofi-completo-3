@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#24211e">
+<title>COFI JAUS | Menú y stock</title>
+<style>
+:root{--bg:#f5f2ec;--paper:#fffefa;--ink:#292722;--muted:#77736b;--line:#e8e2d8;--accent:#87684d;--green:#28634b;--red:#a33d35;--amber:#94651d;--shadow:0 8px 28px #3327190d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:#24211e;color:#fff;padding:22px 18px 18px}header .wrap,main{max-width:900px;margin:auto}
+.eyebrow{font-size:11px;letter-spacing:.18em;color:#c9b59e;font-weight:700}h1{font-family:Georgia,serif;font-weight:500;font-size:29px;margin:5px 0 3px}.sub{color:#d0c9c0;font-size:13px}
+nav{display:flex;gap:8px;overflow:auto;padding:12px 14px;background:#fffefa;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+nav button{white-space:nowrap;border:1px solid var(--line);background:white;border-radius:999px;padding:9px 14px;color:var(--ink);font-weight:650}
+nav button.active{background:#292722;color:white;border-color:#292722}
+main{padding:18px 14px 60px}.panel{display:none}.panel.active{display:block}
+h2{font-size:21px;margin:5px 0 4px} .hint{color:var(--muted);font-size:13px;margin:0 0 15px}
+input,select{font:inherit} .searchbox{width:100%;padding:15px 16px;border:1px solid #d9d1c6;border-radius:13px;background:white;font-size:16px;outline:none}
+.searchbox:focus,input:focus{border-color:var(--accent);box-shadow:0 0 0 3px #87684d1c}
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 16px}.chip{border:1px solid var(--line);border-radius:999px;background:white;padding:7px 11px;font-size:12px;color:#57534d}.chip.active{background:#292722;color:white;border-color:#292722}
+.item{background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:12px 13px;margin:8px 0;box-shadow:var(--shadow)}
+.itemtop{display:flex;align-items:flex-start;gap:10px}.itemname{font-weight:700;flex:1}.price{color:var(--muted);font-size:13px;white-space:nowrap}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.tag{font-size:10px;font-weight:900;letter-spacing:.04em;padding:3px 7px;border-radius:5px}.tacc{background:#f8e7c9;color:#754a0b}.tveg{background:#dcefe2;color:#205b3b}.tnote{background:#eee9e1;color:#62594e}
+.desc{font-size:12px;color:var(--muted);margin-top:5px}.copybtn,.primary,.smallbtn{border:0;border-radius:9px;padding:9px 12px;font-weight:700;background:#292722;color:white;cursor:pointer}.copybtn{font-size:12px;padding:7px 10px}.smallbtn{background:#eee9e1;color:#39352f}.primary{padding:12px 15px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.category{font-family:Georgia,serif;font-size:19px;margin:22px 0 8px;border-bottom:1px solid var(--line);padding-bottom:7px}
+.menurow{display:flex;align-items:flex-start;gap:10px}.menurow input{width:18px;height:18px;margin:2px 0 0;accent-color:#292722}
+.empty{color:var(--muted);text-align:center;padding:28px 10px;background:#fffefa;border-radius:12px}
+.stockgrid{display:grid;grid-template-columns:1fr;gap:14px}.stockcard{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:var(--shadow)}.stockcard h3{margin:0 0 4px;font-size:17px}.stockcard p{margin:0 0 12px;color:var(--muted);font-size:12px}
+.stockform{display:grid;grid-template-columns:1fr;gap:8px}.stockform input{width:100%;padding:11px;border:1px solid var(--line);border-radius:9px;background:white}
+.stocklist{margin-top:12px}.stockentry{display:flex;align-items:center;gap:8px;padding:9px 0;border-top:1px solid var(--line)}.stockentry .entrytext{flex:1;min-width:0}.stockentry strong{display:block}.stockentry small{color:var(--muted)}
+.remove{border:0;background:#f3e8e6;color:var(--red);border-radius:8px;padding:7px 9px;font-weight:700}
+.notice{background:#f8f0df;color:#74521e;padding:11px 13px;border-radius:10px;font-size:12px;margin:12px 0}
+footer{text-align:center;color:#898278;font-size:11px;padding:20px}
+@media(min-width:650px){main{padding:24px 20px 70px}.stockgrid{grid-template-columns:repeat(3,1fr)}.stockform{grid-template-columns:1fr}.item{padding:14px 16px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="eyebrow">COFI JAUS · HERRAMIENTA DE TRABAJO</div><h1>Menú & operación</h1><div class="sub">Buscá productos, copiá comandas y controlá el stock del día.</div></div></header>
+<nav>
+<button class="active" data-tab="buscar">Buscar</button>
+<button data-tab="menu">Menú completo</button>
+<button data-tab="stock">Aclaraciones del día</button>
+</nav>
+<main>
+<section id="buscar" class="panel active">
+<h2>Buscar en el menú</h2><p class="hint">Escribí el nombre de una comida o bebida. Copiá el nombre exacto para usarlo en la comanda.</p>
+<input id="search" class="searchbox" type="search" placeholder="Ej.: latte, avocado, limonada..." autocomplete="off">
+<div class="filters" id="searchFilters">
+<button class="chip active" data-filter="todos">Todos</button><button class="chip" data-filter="sintacc">Sin TACC</button><button class="chip" data-filter="vegetariano">Vegetariano</button>
+</div>
+<div id="results"></div>
+</section>
+<section id="menu" class="panel">
+<h2>Menú completo</h2><p class="hint">Seleccioná uno o varios productos y copiá sus nombres exactos.</p>
+<input id="menuSearch" class="searchbox" type="search" placeholder="Filtrar dentro del menú...">
+<div class="toolbar"><button class="primary" id="copySelected">Copiar seleccionados (<span id="selectedCount">0</span>)</button><button class="smallbtn" id="clearSelected">Limpiar selección</button></div>
+<div id="menuList"></div>
+</section>
+<section id="stock" class="panel">
+<h2>Aclaraciones del día</h2><p class="hint">Se guardan en este dispositivo. Podés copiar cada lista para compartirla con el equipo.</p>
+<div class="stockgrid">
+<div class="stockcard"><h3 style="color:var(--red)">No hay stock</h3><p>Si hay reemplazo, cargalo en el segundo campo. Ej.: Proteína → Banana.</p>
+<div class="stockform"><input id="outName" placeholder="Producto sin stock"><input id="outReplace" placeholder="Reemplazo (opcional)"><button class="primary" id="addOut">Agregar</button></div><div class="stocklist" id="outList"></div><button class="smallbtn" data-copylist="out" style="margin-top:10px">Copiar lista</button></div>
+<div class="stockcard"><h3 style="color:var(--amber)">Stock crítico</h3><p>Productos que quedan en poca cantidad.</p>
+<div class="stockform"><input id="lowName" placeholder="Producto con stock crítico"><button class="primary" id="addLow">Agregar</button></div><div class="stocklist" id="lowList"></div><button class="smallbtn" data-copylist="low" style="margin-top:10px">Copiar lista</button></div>
+<div class="stockcard"><h3 style="color:var(--green)">Sobre stock</h3><p>Productos que conviene ofrecer o impulsar.</p>
+<div class="stockform"><input id="overName" placeholder="Producto con sobre stock"><button class="primary" id="addOver">Agregar</button></div><div class="stocklist" id="overList"></div><button class="smallbtn" data-copylist="over" style="margin-top:10px">Copiar lista</button></div>
+</div>
+<div class="toolbar"><button class="primary" id="copyAllStock">Copiar todas las aclaraciones</button><button class="smallbtn" id="clearStock">Borrar todas las aclaraciones</button></div>
+<div class="notice">Importante: las etiquetas informativas no reemplazan la confirmación con cocina. En las opciones sin TACC, las aclaraciones indican que puede existir contaminación cruzada según el apunte interno.</div>
+</section>
+</main>
+<footer>COFI JAUS · Menú de referencia para uso interno</footer>
+<script>
+const products = [
+["Cafés clásicos",[
+["Espresso","$4.800","1 shot"],["Doble Espresso","$5.200","2 shots"],["Lungo","$5.200","1 shot + agua"],["Americano","$5.700","2 shots + agua"],["Cortado","$6.100","1 shot + leche"],["Doble Espresso Cortado","$6.600","2 shots + leche"],["Flat White","$7.400","2 shots + leche"],["Latte","$7.200","1 shot + leche"],["Capuccino","$7.000","1 shot + leche + espuma"]
+]],
+["Cafés especiales",[
+["Latte Vainilla","$7.500","1 shot + leche + vainilla"],["Mocha","$7.500","1 shot + leche + chocolate"],["Toffee Latte","$7.500","1 shot + leche + caramelo"],["Chocolate Caliente","$7.400"]
+]],
+["Cafés filtrados",[
+["Origen seleccionado por nuestro tostador","$11.400","Chemex / V60 / Aeropress"]
+]],
+["Nuestros fríos",[
+["Cofi Tonic","$8.900","Doble shot de espresso, tónica y cítrico"],["Cold Brew","$7.300","Café macerado e infusionado 12 hs en frío"]
+]],
+["Tés",[
+["Té negro","$6.700"],["Té verde","$6.700"],["Té blend","$6.700"],["Té Chai","$6.700"]
+]],
+["Bebidas",[
+["Gaseosas","$5.900"],["Agua mineral","$5.400"]
+]],
+["Frozen y licuados",[
+["Sunray Cofi","$8.400","Frutos rojos, durazno, naranja y almíbar simple"],["Licuados","$8.700","Banana o Frutilla"],["Licuado Proteico","$9.900","Proteína sabor vainilla, mantequilla de maní, banana y leche descremada"],["Tropicana","$8.600","Jugo de naranja, leche de coco, ananá y mango"]
+]],
+["Jugos",[
+["Limonada","$7.500"],["Limonada de coco","$8.200"],["Pomelada","$6.200"],["Jugo exprimido","$8.000"],["Watermelon Sugar COFI","$6.500"],["Cold Brew de verano","$6.500"]
+]],
+["Con alcohol",[
+["Gin Tonic","$8.400"],["Vermut","$8.400"],["Cerveza Grolsch","$6.800"]
+]],
+["Combos",[
+["Tostado lomito, cheddar, huevo + café o jugo de naranja","$19.700"],["Tostadas en pan de campo o dos medialunas + café","$14.500"],["Almuerzo: plato principal + bebida + café","$31.400"],["Opción 01: yogurt + juguito + café","$23.500"],["Opción 02: pancake + juguito + café","$20.000"],["Mesa perfecta: 2 cafés + 2 bebidas frías + 1 clásico + 1 laminado + 1 team dulce","$57.200"]
+]],
+["Clásicos para desayunar y merendar",[
+["Tostadas","$10.900","Mermelada casera, queso crema, queso Danbo y cherrys","vegetariano"],["Pancakes proteicos","$16.600","Avena, banana y proteína (40 gr. por porción)","vegetariano"],["Avocado toast Jaus","$20.800","Pan de campo, puré y láminas de palta, huevo poché y oliva","vegetariano"],["Yogurt","$19.700","Granola casera, frutas de estación y miel","vegetariano"],["Huevos revueltos","$18.200","Pan tostado, cherrys y palta. Opcional: jamón, panceta","vegetariano"],["Omelette COFI","$19.000","Palta, cebollas encurtidas, rúcula, tomates, mermelada de panceta, queso con ciboulette y tostadas de pan de campo"]
+]],
+["Team dulce · Pastelería",[
+["Alfajor de limón","$7.800"],["Alfajor de almendras","$8.800","Masa sablé de almendras, dulce de leche y nueces"],["Alfajor Bombón","$8.100","Cacao, dulce de leche y corazón de chocolate"],["Pepa de pistachos","$8.300"],["Cookie pistachos & choco blanco","$10.900"],["Cookie de chips de chocolate","$8.300"],["Cookie de frutos rojos","$10.900"],["Muffin de banana","$8.100","Nueces y chips de chocolate"],["Muffin de Naranja","$8.100","Naranja y frutos rojos"]
+]],
+["Laminados",[
+["Medialuna","$4.100",""],["Medialuna JyQ","$8.100"],["Mega chipá","$7.800","110 gramos","sintacc"],["Roll de canela","$8.000"],["Fosforito relleno de JyQ","$8.000"],["Lengüita con pastelera","$6.900"]
+]],
+["Tortas",[
+["Vasca de banana y ddl","$12.500","Torta cremosa de queso, banana y dulce de leche"],["Torta Mousse de Frutilla","$18.200"],["Cítrica de Chocolate blanco","$18.200","Mousse de chocolate blanco y coulis de naranja"],["Pavlova","$10.400","Crema ácida y frutas de estación"]
+]],
+["Team salado · Sándwiches",[
+["Tostado cheddar, lomito, huevo","$15.600","","sintacc"],["Tostado clásico JyQ - Pan de molde","$15.000","Jamón Las Dinas","sintacc"],["Sándwich Caprese","$18.200","Mozzarella, tomate, albahaca y pistachos con pesto","vegetariano"],["Sándwich de Pollo / opcional Wrap","$21.300"],["Sándwich de chipá XL","$28.000","Tapa de asado, cheddar, cebollas encurtidas y barbacoa COFI"],["Sándwich de chipá","$23.400","Lomito, queso Danbo, tomate y rúcula"]
+]],
+["Ensaladas",[
+["Caesar Salad","$21.800"],["Jaus Salad","$21.800","Mix de verdes, tomates cherry, huevo mollet, cabutia asada, choclo, palta, semillas de zapallo, vinagreta COFI, lactonesa de zanahoria y sésamo","vegetariano"],["Pollo grillado Salad","$21.800"]
+]],
+["Opciones individuales",[
+["Medialuna","$11.400","","sintacc"],["Alfajor de chocolate","$9.600","sin TACC según apunte interno","sintacc"],["Medialuna de JyQ","$14.500","","sintacc"],["Tostado de cheddar y lomito","$12.400","","sintacc"],["Tostado de JyQ","$14.500","","sintacc"]
+]],
+["Café en grano · 1/4",[
+["Brasil","",""],["Bolivia","",""],["Colombia Honey","",""],["Colombia Tolima","",""],["Colombia Natural","",""],["Costa Rica","",""],["Ethiopia","",""]
+]]
+];
+const extras = [
+["Huevos revueltos sin pan","Sin TACC · contaminación cruzada","sintacc"],["Omelette sin pan","Sin TACC · contaminación cruzada","sintacc"],["Yogurt sin granola","Sin TACC · contaminación cruzada","sintacc"],["Vasca sin harina, con maizena","Sin TACC · contaminación cruzada","sintacc"],["Caesar sin croutons","Sin TACC · contaminación cruzada","sintacc"],["Jaus Salad","Sin TACC · contaminación cruzada","sintacc"],["Pollo grillado","Sin TACC · contaminación cruzada","sintacc"],["Avocado sin huevo, reemplazar por tomate (tiene miel)","Vegano según apunte interno","vegetariano"],["Jaus sin huevo, vinagreta y lactonesa (tiene leche)","Vegano según apunte interno","vegetariano"],["Grillado sin pollo y alioli (tiene leche)","Vegano según apunte interno","vegetariano"],["Avocado","Vegetariano","vegetariano"],["Jaus (sin panceta)","Vegetariano","vegetariano"],["Grillado sin pollo","Vegetariano","vegetariano"],["Sándwich de pollo sin pollo (si comen queso)","Vegetariano","vegetariano"],["Omelette sin mermelada de panceta","Vegetariano","vegetariano"],["Medialuna con queso","Vegetariano","vegetariano"],["Sándwich de chipá: sin lomito","Vegetariano","vegetariano"],["Pancakes","Vegetariano","vegetariano"]
+];
+const flat=[];
+products.forEach(([cat,items])=>items.forEach(a=>flat.push({cat,name:a[0],price:a[1]||"",desc:a[2]||"",tag:a[3]||""})));
+function tagHTML(tag){return tag==='sintacc'?'<span class="tag tacc">SIN TACC</span>':tag==='vegetariano'?'<span class="tag tveg">VEGETARIANO</span>':''}
+function itemHTML(p,checkbox=false){return `<div class="item"><div class="itemtop">${checkbox?`<input type="checkbox" class="pick" value="${esc(p.name)}">`:''}<div class="itemname">${esc(p.name)}<div class="tags">${tagHTML(p.tag)}${p.note?`<span class="tag tnote">${esc(p.note)}</span>`:''}</div>${p.desc?`<div class="desc">${esc(p.desc)}</div>`:''}</div>${p.price?`<span class="price">${esc(p.price)}</span>`:''}<button class="copybtn" data-copy="${esc(p.name)}">Copiar</button></div></div>`}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+let activeFilter='todos';
+function allSearchItems(){return [...flat,...extras.map(x=>({name:x[0],desc:x[1],tag:x[2],price:'',cat:'Aclaraciones y variantes'}))]}
+function renderSearch(){let q=document.getElementById('search').value.toLocaleLowerCase('es');let arr=allSearchItems().filter(p=>(p.name+' '+p.desc+' '+p.cat).toLocaleLowerCase('es').includes(q)&&(activeFilter==='todos'||p.tag===activeFilter));document.getElementById('results').innerHTML=arr.length?arr.map(p=>itemHTML(p)).join(''):'<div class="empty">No se encontraron productos.</div>'}
+function renderMenu(){let q=document.getElementById('menuSearch').value.toLocaleLowerCase('es');let html='';products.forEach(([cat,items])=>{let shown=items.map(a=>({cat,name:a[0],price:a[1]||'',desc:a[2]||'',tag:a[3]||''})).filter(p=>(p.name+' '+p.desc).toLocaleLowerCase('es').includes(q));if(shown.length)html+=`<h3 class="category">${esc(cat)}</h3>`+shown.map(p=>itemHTML(p,true)).join('')});document.getElementById('menuList').innerHTML=html||'<div class="empty">No se encontraron productos.</div>';document.getElementById('selectedCount').textContent=document.querySelectorAll('.pick:checked').length}
+async function copyText(s){try{await navigator.clipboard.writeText(s);toast('Copiado')}catch(e){let t=document.createElement('textarea');t.value=s;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();toast('Copiado')}}
+let toastTimer;function toast(s){let el=document.getElementById('toast');if(!el){el=document.createElement('div');el.id='toast';el.style='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#292722;color:white;padding:10px 16px;border-radius:30px;z-index:20;font-size:13px';document.body.appendChild(el)}el.textContent=s;el.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.style.display='none',1500)}
+document.addEventListener('click',e=>{let b=e.target.closest('[data-copy]');if(b)copyText(b.dataset.copy)});
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===b.dataset.tab))}));
+document.getElementById('search').addEventListener('input',renderSearch);
+document.querySelectorAll('#searchFilters button').forEach(b=>b.addEventListener('click',()=>{activeFilter=b.dataset.filter;document.querySelectorAll('#searchFilters button').forEach(x=>x.classList.toggle('active',x===b));renderSearch()}));
+document.getElementById('menuSearch').addEventListener('input',renderMenu);
+document.getElementById('menuList').addEventListener('change',e=>{if(e.target.classList.contains('pick'))document.getElementById('selectedCount').textContent=document.querySelectorAll('.pick:checked').length});
+document.getElementById('copySelected').onclick=()=>{let a=[...document.querySelectorAll('.pick:checked')].map(x=>x.value);if(a.length)copyText(a.join('\n'));else toast('No seleccionaste productos')};
+document.getElementById('clearSelected').onclick=()=>{document.querySelectorAll('.pick:checked').forEach(x=>x.checked=false);document.getElementById('selectedCount').textContent='0'};
+let stock=JSON.parse(localStorage.getItem('cofiStockV1')||'{"out":[],"low":[],"over":[]}');
+function saveStock(){localStorage.setItem('cofiStockV1',JSON.stringify(stock));renderStock()}
+function renderStock(){[['out','outList'],['low','lowList'],['over','overList']].forEach(([k,id])=>{document.getElementById(id).innerHTML=stock[k].length?stock[k].map((v,i)=>`<div class="stockentry"><div class="entrytext"><strong>${esc(v.name)}</strong>${v.replace?`<small>Reemplazo: ${esc(v.replace)}</small>`:''}</div><button class="remove" data-remove="${k}:${i}">×</button></div>`).join(''):'<div class="desc">Sin productos cargados.</div>'})}
+function addStock(kind,nameId,replaceId){let name=document.getElementById(nameId).value.trim();if(!name){toast('Escribí un producto');return}let replace=replaceId?document.getElementById(replaceId).value.trim():'';stock[kind].push({name,replace});document.getElementById(nameId).value='';if(replaceId)document.getElementById(replaceId).value='';saveStock()}
+document.getElementById('addOut').onclick=()=>addStock('out','outName','outReplace');
+document.getElementById('addLow').onclick=()=>addStock('low','lowName');
+document.getElementById('addOver').onclick=()=>addStock('over','overName');
+document.getElementById('stock').addEventListener('click',e=>{if(e.target.dataset.remove){let [k,i]=e.target.dataset.remove.split(':');stock[k].splice(+i,1);saveStock()}if(e.target.dataset.copylist){let k=e.target.dataset.copylist;copyText(stock[k].map(v=>v.name+(v.replace?' → '+v.replace:'')).join('\n')||'Sin productos cargados')}});
+function stockText(){return ['NO HAY STOCK',stock.out.map(v=>v.name+(v.replace?' → Reemplazo: '+v.replace:'')).join('\n')||'Sin productos', '', 'STOCK CRÍTICO',stock.low.map(v=>v.name).join('\n')||'Sin productos','','SOBRE STOCK',stock.over.map(v=>v.name).join('\n')||'Sin productos'].join('\n')}
+document.getElementById('copyAllStock').onclick=()=>copyText(stockText());
+document.getElementById('clearStock').onclick=()=>{if(confirm('¿Borrar todas las aclaraciones del día?')){stock={out:[],low:[],over:[]};saveStock()}};
+renderSearch();renderMenu();renderStock();
+</script>
+</body></html>
